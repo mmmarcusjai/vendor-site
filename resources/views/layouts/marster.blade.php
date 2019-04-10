@@ -15,7 +15,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="/css/app.css">
 </head>
 <body class="hold-transition sidebar-mini">
-    <div class="wrapper">
+    <div class="wrapper" id="app">
 
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
@@ -67,28 +67,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <!-- Add icons to the links using the .nav-icon class
                     with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <router-link to="/dashboard" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt blue"></i>
                         <p>
-                        Dashboard
-                        <!-- <span class="right badge badge-danger">New</span> -->
+                            Dashboard
+                            <!-- <span class="right badge badge-danger">New</span> -->
                         </p>
-                    </a>
+                    </router-link>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
+                    <router-link to="/profile" class="nav-link">
+                        <i class="nav-icon fas fa-user green"></i>
                         <p>
-                        Profile
+                            Profile
                         </p>
-                    </a>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link to="/users" class="nav-link">
+                        <i class="nav-icon fas fa-users yellow"></i>
+                        <p>
+                            Users
+                        </p>
+                    </router-link>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>
-                        Setting
-                        <i class="right fa fa-angle-left"></i>
+                            Setting
+                            <i class="right fa fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
@@ -107,12 +115,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-power-off"></i>
+                    <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="nav-icon fas fa-power-off red"></i>
                         <p>
-                        Logout
+                            {{ __('Logout') }}
                         </p>
                     </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
                 </li>
             </ul>
             </nav>
@@ -123,22 +135,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <div class="content-header">
-                <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-12">
-                    <h1 class="m-0 text-dark">Dashboard</h1>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-                </div><!-- /.container-fluid -->
-            </div>
-            <!-- /.content-header -->
-
             <!-- Main content -->
-            <div id="app">
-                <example-component></example-component>
-            </div>
+            <!-- <example-component></example-component> -->
+            <router-view></router-view>
         </div>
         <!-- /.content-wrapper -->
 
@@ -161,8 +160,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Default to the left -->
         <strong>Copyright &copy; 2014-2018 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
         </footer>
-</div>
-<!-- ./wrapper -->
-<script src="/js/app.js"></script>
+    </div>
+    <!-- ./wrapper -->
+    <script src="/js/app.js"></script>
 </body>
 </html>
