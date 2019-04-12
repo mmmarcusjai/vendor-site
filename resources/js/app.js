@@ -25,9 +25,21 @@ let routes = [
     { path: '/users', component: require('./components/Users.vue').default }
 ]
 
+import VueProgressBar from 'vue-progressbar';
+
+Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '3px'
+});
+
 const router = new VueRouter({
     mode: 'history',
     routes // short for `routes: routes`
+})
+
+Vue.filter('upperCase', (value) => {
+    return value.charAt(0).toUpperCase() + value.slice(1)
 })
 
 /**

@@ -26,7 +26,7 @@
                                 <td>{{ user.id}}</td>
                                 <td>{{ user.name}}</td>
                                 <td>{{ user.email}}</td>
-                                <td>{{ user.type}}</td>
+                                <td>{{ user.type | upperCase}}</td>
                                 <td>{{ user.created_at}}</td>
                                 <td>
                                     <a href="#">
@@ -38,22 +38,6 @@
                                     </a>
                                 </td>
                             </tr>
-                            <!-- <tr>
-                                <td>123</td>
-                                <td>Admin Dummy</td>
-                                <td>admin@adminlte.com</td>
-                                <td>admin</td>
-                                <td>12-12-2001</td>
-                                <td>
-                                    <a href="#">
-                                        <i class="fas fa-pen blue"></i>
-                                    </a>
-                                    |
-                                    <a href="#">
-                                        <i class="fas fa-trash-alt red"></i>
-                                    </a>
-                                </td>
-                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -150,7 +134,8 @@
                 ));
             },
             createUser() {
-                this.form.post('api/user');
+                // this.form.post('api/user');
+                this.$Progress.start();
                 console.log('create success!');
             }
         },
