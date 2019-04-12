@@ -22,7 +22,23 @@
                                 <th>Registered At</th>
                                 <th>Modify</th>
                             </tr>
-                            <tr>
+                            <tr v-for="user in users" :key="user.id">
+                                <td>{{ user.id}}</td>
+                                <td>{{ user.name}}</td>
+                                <td>{{ user.email}}</td>
+                                <td>{{ user.type}}</td>
+                                <td>{{ user.created_at}}</td>
+                                <td>
+                                    <a href="#">
+                                        <i class="fas fa-pen blue"></i>
+                                    </a>
+                                    |
+                                    <a href="#">
+                                        <i class="fas fa-trash-alt red"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <!-- <tr>
                                 <td>123</td>
                                 <td>Admin Dummy</td>
                                 <td>admin@adminlte.com</td>
@@ -37,7 +53,7 @@
                                         <i class="fas fa-trash-alt red"></i>
                                     </a>
                                 </td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -115,6 +131,7 @@
     export default {
         data() {
             return {
+                users: {},
                 form: new Form({
                     id:'',
                     name : '',
@@ -126,14 +143,19 @@
                 })
             }
         },
-        mounted() {
-            console.log('Component mounted.')
-        },
         methods: {
+            loadUsers() {
+                axios.get('api/user').then(( {data} ) => (
+                    this.users = data.data
+                ));
+            },
             createUser() {
                 this.form.post('api/user');
                 console.log('create success!');
             }
+        },
+        created() {
+            this.loadUsers();
         }
     }
 </script>
