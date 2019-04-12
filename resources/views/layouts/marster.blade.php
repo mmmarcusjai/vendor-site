@@ -93,7 +93,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-cog"></i>
+                        <i class="nav-icon fas fa-cog indigo"></i>
                         <p>
                             Setting
                             <i class="right fa fa-angle-left"></i>
