@@ -20,10 +20,16 @@ Vue.component(AlertError.name, AlertError);
 Vue.use(VueRouter);
 
 let routes = [
+    { path: '/home', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/profile', component: require('./components/Profile.vue').default },
     { path: '/users', component: require('./components/Users.vue').default }
 ]
+
+const router = new VueRouter({
+    mode: 'history',
+    routes // short for `routes: routes`
+});
 
 import VueProgressBar from 'vue-progressbar';
 
@@ -33,10 +39,16 @@ Vue.use(VueProgressBar, {
     height: '3px'
 });
 
-const router = new VueRouter({
-    mode: 'history',
-    routes // short for `routes: routes`
-})
+import Swal from 'sweetalert2';
+
+window.Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+});
+
+window.Fire = new Vue();
 
 Vue.filter('upperCase', (value) => {
     return value.charAt(0).toUpperCase() + value.slice(1)

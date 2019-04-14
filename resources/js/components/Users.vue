@@ -23,10 +23,10 @@
                                 <th>Modify</th>
                             </tr>
                             <tr v-for="user in users" :key="user.id">
-                                <td>{{ user.id}}</td>
-                                <td>{{ user.name}}</td>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name | upperCase }}</td>
                                 <td>{{ user.email}}</td>
-                                <td>{{ user.type | upperCase}}</td>
+                                <td>{{ user.type | upperCase }}</td>
                                 <td>{{ user.created_at}}</td>
                                 <td>
                                     <a href="#">
@@ -91,7 +91,7 @@
                             </div>
 
                             <div class="form-group">
-                                <input v-model="form.password" type="password" name="password" id="password"
+                                <input v-model="form.password" type="password" name="password" id="password" placeholder="Password"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                                 <has-error :form="form" field="password"></has-error>
                             </div>
@@ -124,7 +124,8 @@
                     type: '',
                     bio: '',
                     photo: ''
-                })
+                }),
+                errors: []
             }
         },
         methods: {
@@ -133,14 +134,58 @@
                     this.users = data.data
                 ));
             },
+            checkForm(e) {
+                if(!this.form.name) {
+                    console.log(`${this.form.name}`);
+                }
+            },
             createUser() {
-                // this.form.post('api/user');
                 this.$Progress.start();
-                console.log('create success!');
+                axios({
+                    method: 'post',
+                    url: 'api/user',
+                    data: {
+                        data: this.form
+                    }
+                })
+                .then((resoponse) => {
+                    console.log(response);
+                    $('#newUser').modal('hide');
+                    Fire.$emit('userCreated');
+                    Toast.fire({
+                        type: 'success',
+                        title: 'User create successfully'
+                    });
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                });
+                this.$Progress.finish();
+                /*
+                this.$Progress.start();
+                this.form.post('api/user')
+                .then((response) => {
+                    console.log(response);
+                    $('#newUser').modal('hide');
+                    Fire.$emit('userCreated');
+                    Toast.fire({
+                        type: 'success',
+                        title: 'User create successfully'
+                    });
+                    this.$Progress.finish();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+                */
+
             }
         },
         created() {
             this.loadUsers();
+            Fire.$on('userCreated', () => {
+                this.loadUsers();
+            });
         }
     }
 </script>
