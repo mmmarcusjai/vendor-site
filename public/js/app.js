@@ -2010,9 +2010,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      editmode: false,
       users: {},
       form: new Form({
         id: '',
@@ -2035,38 +2038,63 @@ __webpack_require__.r(__webpack_exports__);
         return _this.users = data.data;
       });
     },
+    openModal: function openModal(user) {
+      if (!user) {
+        this.editmode = false;
+        this.form.reset();
+        this.form.type = "";
+      } else {
+        this.editmode = true;
+        this.form.fill(user);
+      }
+
+      $('#userModal').modal('show');
+    },
     checkForm: function checkForm(e) {
       if (!this.form.name) {
         console.log("".concat(this.form.name));
       }
     },
-    createUser: function createUser() {
+    updateUser: function updateUser() {
+      var _this2 = this;
+
       this.$Progress.start();
-      axios({
-        method: 'post',
-        url: 'api/user',
-        data: {
-          data: this.form
-        }
-      }).then(function (resoponse) {
+      this.form.put('api/user/' + this.form.id).then(function () {
+        // success
+        $('#userModal').modal('hide');
+        Swal.fire('Updated!', 'Information has been updated.', 'success');
+
+        _this2.$Progress.finish();
+
+        Fire.$emit('userModified');
+      })["catch"](function () {
+        _this2.$Progress.fail();
+      });
+    },
+    createUser: function createUser() {
+      var _this3 = this;
+
+      this.$Progress.start();
+      axios.post('api/user', this.form).then(function (response) {
         console.log(response);
-        $('#newUser').modal('hide');
-        Fire.$emit('userCreated');
+        $('#userModal').modal('hide');
+        Fire.$emit('userModified');
         Toast.fire({
           type: 'success',
           title: 'User create successfully'
         });
+
+        _this3.$Progress.finish();
       })["catch"](function (error) {
         console.log(error.response);
       });
-      this.$Progress.finish();
       /*
       this.$Progress.start();
       this.form.post('api/user')
       .then((response) => {
           console.log(response);
-          $('#newUser').modal('hide');
-          Fire.$emit('userCreated');
+          $('#userModal').modal('hide');
+          Fire.$emit('userModified');
           Toast.fire({
               type: 'success',
               title: 'User create successfully'
@@ -2077,14 +2105,38 @@ __webpack_require__.r(__webpack_exports__);
           console.log(error);
       });
       */
+    },
+    deleteUser: function deleteUser(id) {
+      var _this4 = this;
+
+      console.log(id);
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(function (result) {
+        // Send request
+        if (result.value) {
+          _this4.form["delete"]('api/user/' + id).then(function () {
+            Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+            Fire.$emit('userModified');
+          })["catch"](function () {
+            Swal.fire("Failed!", "There was something wronge.", "warning");
+          });
+        }
+      });
     }
   },
   created: function created() {
-    var _this2 = this;
+    var _this5 = this;
 
     this.loadUsers();
-    Fire.$on('userCreated', function () {
-      _this2.loadUsers();
+    Fire.$on('userModified', function () {
+      _this5.loadUsers();
     });
   }
 });
@@ -41053,14 +41105,34 @@ var render = function() {
     _c("div", { staticClass: "row mt-5" }, [
       _c("div", { staticClass: "col-md-12" }, [
         _c("div", { staticClass: "card" }, [
-          _vm._m(0),
+          _c("div", { staticClass: "card-header" }, [
+            _c("h3", { staticClass: "card-title" }, [_vm._v("Users Table")]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-tools" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  on: {
+                    click: function($event) {
+                      return _vm.openModal()
+                    }
+                  }
+                },
+                [
+                  _vm._v("Add New "),
+                  _c("i", { staticClass: "fas fa-user-plus fa-fw" })
+                ]
+              )
+            ])
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body table-responsive p-0" }, [
             _c("table", { staticClass: "table table-hover" }, [
               _c(
                 "tbody",
                 [
-                  _vm._m(1),
+                  _vm._m(0),
                   _vm._v(" "),
                   _vm._l(_vm.users, function(user) {
                     return _c("tr", { key: user.id }, [
@@ -41078,7 +41150,35 @@ var render = function() {
                       _vm._v(" "),
                       _c("td", [_vm._v(_vm._s(user.created_at))]),
                       _vm._v(" "),
-                      _vm._m(2, true)
+                      _c("td", [
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                return _vm.openModal(user)
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "fas fa-pen blue" })]
+                        ),
+                        _vm._v(
+                          "\n                                |\n                                "
+                        ),
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteUser(user.id)
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "fas fa-trash-alt red" })]
+                        )
+                      ])
                     ])
                   })
                 ],
@@ -41095,10 +41195,10 @@ var render = function() {
       {
         staticClass: "modal fade",
         attrs: {
-          id: "newUser",
+          id: "userModal",
           tabindex: "-1",
           role: "dialog",
-          "aria-labelledby": "newUserTitle",
+          "aria-labelledby": "userModalTitle",
           "aria-hidden": "true"
         }
       },
@@ -41111,7 +41211,43 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(3),
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.editmode,
+                        expression: "!editmode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "addNewLabel" }
+                  },
+                  [_vm._v("Add New")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.editmode,
+                        expression: "editmode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "addNewLabel" }
+                  },
+                  [_vm._v("Update User's Info")]
+                ),
+                _vm._v(" "),
+                _vm._m(1)
+              ]),
               _vm._v(" "),
               _c(
                 "form",
@@ -41119,7 +41255,7 @@ var render = function() {
                   on: {
                     submit: function($event) {
                       $event.preventDefault()
-                      return _vm.createUser($event)
+                      _vm.editmode ? _vm.updateUser() : _vm.createUser()
                     },
                     keydown: function($event) {
                       return _vm.form.onKeydown($event)
@@ -41287,16 +41423,16 @@ var render = function() {
                               _vm._v("Select User Role")
                             ]),
                             _vm._v(" "),
+                            _c("option", { attrs: { value: "super admin" } }, [
+                              _vm._v("Super Admin")
+                            ]),
+                            _vm._v(" "),
                             _c("option", { attrs: { value: "admin" } }, [
                               _vm._v("Admin")
                             ]),
                             _vm._v(" "),
                             _c("option", { attrs: { value: "user" } }, [
-                              _vm._v("Standard User")
-                            ]),
-                            _vm._v(" "),
-                            _c("option", { attrs: { value: "author" } }, [
-                              _vm._v("Author")
+                              _vm._v("Company")
                             ])
                           ]
                         ),
@@ -41367,10 +41503,35 @@ var render = function() {
                     _c(
                       "button",
                       {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: !_vm.editmode,
+                            expression: "!editmode"
+                          }
+                        ],
                         staticClass: "btn btn-primary",
                         attrs: { disabled: _vm.form.busy, type: "submit" }
                       },
                       [_vm._v("Add")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.editmode,
+                            expression: "editmode"
+                          }
+                        ],
+                        staticClass: "btn btn-success",
+                        attrs: { disabled: _vm.form.busy, type: "submit" }
+                      },
+                      [_vm._v("Update")]
                     )
                   ])
                 ]
@@ -41383,28 +41544,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-header" }, [
-      _c("h3", { staticClass: "card-title" }, [_vm._v("Users Table")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-tools" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-success",
-            attrs: { "data-toggle": "modal", "data-target": "#newUser" }
-          },
-          [
-            _vm._v("Add New "),
-            _c("i", { staticClass: "fas fa-user-plus fa-fw" })
-          ]
-        )
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -41427,42 +41566,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("a", { attrs: { href: "#" } }, [
-        _c("i", { staticClass: "fas fa-pen blue" })
-      ]),
-      _vm._v(
-        "\n                                |\n                                "
-      ),
-      _c("a", { attrs: { href: "#" } }, [
-        _c("i", { staticClass: "fas fa-trash-alt red" })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "h5",
-        { staticClass: "modal-title", attrs: { id: "newUserModalLongTitle" } },
-        [_vm._v("Add New")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
   }
 ]
 render._withStripped = true
@@ -56316,6 +56431,7 @@ Vue.use(vue_progressbar__WEBPACK_IMPORTED_MODULE_2___default.a, {
   height: '3px'
 });
 
+window.Swal = sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a;
 window.Toast = sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.mixin({
   toast: true,
   position: 'top-end',
@@ -56704,8 +56820,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/kachunchan/Sites/adminltevue/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/kachunchan/Sites/adminltevue/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/marcuschan/Sites/vendor-site/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/marcuschan/Sites/vendor-site/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
