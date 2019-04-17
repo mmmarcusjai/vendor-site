@@ -51,7 +51,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add New</h5>
+                        <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add User</h5>
                         <h5 class="modal-title" v-show="editmode" id="addNewLabel">Update User's Info</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -222,11 +222,7 @@
                     // Send request
                     if (result.value) {
                         this.form.delete('api/user/'+id).then(()=>{
-                            Swal.fire(
-                                'Deleted!',
-                                'Your file has been deleted.',
-                                'success'
-                            )
+                            Swal.fire('Deleted!', 'Your file has been deleted.', 'success' );
                             Fire.$emit('userModified');
                         }).catch(()=> {
                             Swal.fire("Failed!", "There was something wronge.", "warning");

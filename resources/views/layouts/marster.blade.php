@@ -57,7 +57,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <img src="../img/profile.png" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
+                <a href="#" class="d-block text-uppercase">{{ Auth::user()->name }}</a>
             </div>
             </div>
 
@@ -83,36 +83,34 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </p>
                     </router-link>
                 </li>
-                <li class="nav-item">
-                    <router-link to="/users" class="nav-link">
-                        <i class="nav-icon fas fa-users yellow"></i>
-                        <p>
-                            Users
-                        </p>
-                    </router-link>
-                </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cog indigo"></i>
                         <p>
-                            Setting
+                            Management
                             <i class="right fa fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if (Auth::user()->type == 'super admin')
                         <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="fas fa-circle nav-icon"></i>
-                            <p>Active Page</p>
-                        </a>
+                            <router-link to="/users" class="nav-link">
+                                <i class="nav-icon fas fa-users yellow"></i>
+                                <p>
+                                    Users
+                                </p>
+                            </router-link>
                         </li>
-                        <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fa fa-circle-o nav-icon"></i>
-                            <p>Inactive Page</p>
-                        </a>
-                        </li>
+                        @endif
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <router-link to="/developer" class="nav-link">
+                        <i class="nav-icon fas fa-cogs pink"></i>
+                        <p>
+                            Developer
+                        </p>
+                    </router-link>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
