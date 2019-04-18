@@ -8,7 +8,7 @@
 
 <template>
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mt-3">
             <div class="col-md-12">
                 <div class="card card-widget widget-user">
                     <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -49,8 +49,8 @@
                     <!-- /.row -->
                     </div>
                 </div>
-
-                <div class="col-md-12">
+            </div>
+            <div class="col-md-8">
                     <div class="card">
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">
@@ -101,14 +101,14 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="password" class="col-sm-12 control-label">Passport (leave empty if not changing)</label>
+                                        <label for="password" class="col-sm-12 control-label">Password (leave empty if not changing)</label>
 
                                         <div class="col-sm-12">
                                         <input type="password"
                                             v-model="form.password"
                                             class="form-control"
                                             id="password"
-                                            placeholder="Passport"
+                                            placeholder="Password"
                                             :class="{ 'is-invalid': form.errors.has('password') }"
                                         >
                                             <has-error :form="form" field="password"></has-error>
@@ -130,7 +130,6 @@
                     <!-- /.nav-tabs-custom -->
                 </div>
                 <!-- end tabs -->
-            </div>
         </div>
     </div>
 </template>
@@ -176,12 +175,9 @@
                 let file = e.target.files[0];
                 let reader = new FileReader();
                 let limit = 1024 * 1024 * 2;
+                // Check upload file size
                 if(file['size'] > limit){
-                    swal({
-                        type: 'error',
-                        title: 'Oops...',
-                        text: 'You are uploading a large file',
-                    })
+                    Swal.fire({ type: 'error', title: 'Oops...', text: 'You are uploading a large file'})
                     return false;
                 }
                 reader.onloadend = (file) => {
