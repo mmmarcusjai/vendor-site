@@ -2045,12 +2045,10 @@ __webpack_require__.r(__webpack_exports__);
     updateInfo: function updateInfo() {
       var _this = this;
 
-      this.$Progress.start();
-
-      if (this.form.password == '') {
-        this.form.password = undefined;
-      }
-
+      // this.$Progress.start();
+      // if(this.form.password == ''){
+      //     this.form.password = undefined;
+      // }
       this.form.put('api/profile').then(function () {
         Fire.$emit('AfterCreate');
 

@@ -158,13 +158,13 @@
                 return photo;
             },
             updateInfo(){
-                this.$Progress.start();
-                if(this.form.password == ''){
-                    this.form.password = undefined;
-                }
+                // this.$Progress.start();
+                // if(this.form.password == ''){
+                //     this.form.password = undefined;
+                // }
                 this.form.put('api/profile')
                 .then(()=>{
-                     Fire.$emit('AfterCreate');
+                    Fire.$emit('AfterCreate');
                     this.$Progress.finish();
                 })
                 .catch(() => {

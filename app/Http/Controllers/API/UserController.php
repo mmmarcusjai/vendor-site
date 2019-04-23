@@ -104,4 +104,29 @@ class UserController extends Controller
     {
         return auth('api')->user();
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth('api')->user();
+        $currentPhotot = $user->photo;
+
+        if($request->photo != $currentPhotot) 
+        {
+            $ext = explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
+
+            $profilename = time() . ".{$ext}";
+
+            \Image::make($request->photo)->save(public_path('img/profile/').$profilename);    
+            $request->merge(['photo' => $name]);
+        }
+
+        if(!empty($request->password))
+        {
+            $request->merge(['password' => Hash::make($request['password'])]);
+        }
+        
+        $user->update($request->all());
+        
+        return ['message' => 'success'];
+    }
 }
