@@ -54,7 +54,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="../img/profile.png" class="img-circle elevation-2" alt="User Image">
+                <img src="../img/profile/{{ Auth::user()->photo}}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
                 <a href="#" class="d-block text-uppercase">{{ Auth::user()->name }}</a>
@@ -83,27 +83,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </p>
                     </router-link>
                 </li>
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-cog indigo"></i>
-                        <p>
-                            Management
-                            <i class="right fa fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        @if (Auth::user()->type == 'super admin')
-                        <li class="nav-item">
-                            <router-link to="/users" class="nav-link">
-                                <i class="nav-icon fas fa-users yellow"></i>
-                                <p>
-                                    Users
-                                </p>
-                            </router-link>
-                        </li>
-                        @endif
-                    </ul>
-                </li>
+
+                @if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin'))
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-cog indigo"></i>
+                            <p>
+                                Management
+                                <i class="right fa fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            @can('isSadmin')
+                            <li class="nav-item">
+                                <router-link to="/users" class="nav-link">
+                                    <i class="nav-icon fas fa-users yellow"></i>
+                                    <p>
+                                        Users
+                                    </p>
+                                </router-link>
+                            </li>
+                            @endcan
+                            <li class="nav-item">
+                                <router-link to="/companies" class="nav-link">
+                                    <i class="nav-icon fas fa-building orange"></i>
+                                    <p>
+                                        Companies
+                                    </p>
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link to="/projects" class="nav-link">
+                                    <i class="nav-icon fas fa-file"></i>
+                                    <p>
+                                        Projects
+                                    </p>
+                                </router-link>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+                @can('isSadmin')
                 <li class="nav-item">
                     <router-link to="/developer" class="nav-link">
                         <i class="nav-icon fas fa-cogs pink"></i>
@@ -112,6 +132,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </p>
                     </router-link>
                 </li>
+                @endcan
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="nav-icon fas fa-power-off red"></i>
@@ -154,13 +175,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <footer class="main-footer">
         <!-- To the right -->
         <div class="float-right d-none d-sm-inline">
-            Anything you want
+            (Anything you want)
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2014-2018 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+        <strong>Copyright</strong>  XXX All rights reserved.
         </footer>
     </div>
     <!-- ./wrapper -->
+    @auth
+        <script>
+            window.user = @json(auth()->user())
+        </script>
+    @endauth
     <script src="/js/app.js"></script>
 </body>
 </html>

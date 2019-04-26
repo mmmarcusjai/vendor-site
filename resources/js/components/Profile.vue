@@ -13,11 +13,11 @@
                 <div class="card card-widget widget-user">
                     <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header text-white" style="background: url('./img/MG_4307f.jpg')">
-                    <h3 class="widget-user-username">Elizabeth Pierce</h3>
-                    <h5 class="widget-user-desc">Web Designer</h5>
+                    <h3 class="widget-user-username">{{this.form.name}}</h3>
+                    <h5 class="widget-user-desc">{{this.form.bio}}</h5>
                     </div>
                     <div class="widget-user-image">
-                    <img class="img-circle" src="" alt="User Avatar">
+                    <img class="img-circle" :src="getProfilePhoto()" alt="User Avatar">
                     </div>
                     <div class="card-footer">
                     <div class="row">
@@ -85,10 +85,10 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="inputExperience" class="col-sm-2 control-label">Experience</label>
+                                        <label for="inputDesc" class="col-sm-2 control-label">Description</label>
 
                                         <div class="col-sm-12">
-                                        <textarea  v-model="form.bio" class="form-control" id="inputExperience" placeholder="Experience" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
+                                        <textarea  v-model="form.bio" class="form-control" id="inputDesc" placeholder="Desc" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
                                             <has-error :form="form" field="bio"></has-error>
                                         </div>
                                     </div>
@@ -158,14 +158,21 @@
                 return photo;
             },
             updateInfo(){
-                // this.$Progress.start();
-                // if(this.form.password == ''){
-                //     this.form.password = undefined;
-                // }
+                this.$Progress.start();
+                if(this.form.password == '') {
+                    this.form.password = undefined;
+                }
                 this.form.put('api/profile')
-                .then(()=>{
+                .then((response)=>{
+                    console.log(response);
                     Fire.$emit('AfterCreate');
                     this.$Progress.finish();
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Your profile updated',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 })
                 .catch(() => {
                     this.$Progress.fail();

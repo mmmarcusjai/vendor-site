@@ -27,7 +27,10 @@ class UserController extends Controller
     public function index()
     {
         // return User::all();
-        return User::latest()->paginate(10);
+        if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
+        {
+            return User::latest()->paginate(10);
+        }
     }
 
     /**
@@ -92,12 +95,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
+        {
+            $user = User::findOrFail($id);
+            // Delete user
+            $user->delete();
 
-        // Delete user
-        $user->delete();
-
-        return ['message' => 'User Deleted'];
+            return ['message' => 'User Deleted'];
+        }
     }
 
     public function profile()
@@ -108,16 +113,31 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $user = auth('api')->user();
-        $currentPhotot = $user->photo;
 
-        if($request->photo != $currentPhotot) 
+        $this->validate($request,[
+            'name' => 'required|string|max:191',
+            'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
+            'password' => 'sometimes|required|min:6'
+        ]);
+
+        $currentPhoto = $user->photo;
+
+        if($request->photo != $currentPhoto) 
         {
             $ext = explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
 
             $profilename = time() . ".{$ext}";
-
+            // move new photo to new folder 
             \Image::make($request->photo)->save(public_path('img/profile/').$profilename);    
-            $request->merge(['photo' => $name]);
+            $request->merge(['photo' => $profilename]);
+
+            $userPhoto = public_path('img/profile/').$currentPhoto;
+            // Deleter prev photo
+            if(file_exists($userPhoto))
+            {
+                @unlink($userPhoto);
+            }
+            $currentPhoto = $profilename;
         }
 
         if(!empty($request->password))
@@ -126,7 +146,14 @@ class UserController extends Controller
         }
         
         $user->update($request->all());
-        
-        return ['message' => 'success'];
+        return ['message' => 'success', 'profile' => $currentPhoto];
+    }
+
+    public function companyList() 
+    {
+        if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
+        {
+            return User::where('type', 'user');
+        }
     }
 }

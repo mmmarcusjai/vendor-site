@@ -1,10 +1,10 @@
 <template>
     <div class="container">
-        <div class="row mt-5" v-if="$gate.isSadmin()">
+        <div class="row mt-5" v-if="$gate.isSadminOrAdmin()">
           <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Users Table</h3>
+                    <h3 class="card-title">Companies Table</h3>
 
                     <div class="card-tools">
                         <button class="btn btn-success" @click="openModal()">Add New <i class="fas fa-user-plus fa-fw"></i></button>
@@ -18,7 +18,6 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Type</th>
                                 <th>Registered At</th>
                                 <th>Modify</th>
                             </tr>
@@ -26,7 +25,6 @@
                                 <td>{{ user.id }}</td>
                                 <td>{{ user.name | upperCase }}</td>
                                 <td>{{ user.email}}</td>
-                                <td>{{ user.type | upperCase }}</td>
                                 <td>{{ user.created_at}}</td>
                                 <td>
                                     <a href="#" @click="openModal(user)">
@@ -47,7 +45,7 @@
           </div>
         </div>
 
-        <div v-if="!$gate.isSadmin()">
+        <div v-if="!$gate.isSadminOrAdmin()">
             <not-found></not-found>
         </div>
         <!-- Modal -->
@@ -137,8 +135,8 @@
         },
         methods: {
             loadUsers() {
-                if(this.$gate.isSadmin()) {
-                    axios.get('api/user').then(( {data} ) => (
+                if(this.$gate.isSadminOrAdmin()) {
+                    axios.get('api/companies').then(( {data} ) => (
                         this.users = data.data
                     ));
                 }
