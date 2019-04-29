@@ -102,6 +102,11 @@ Vue.component(
     'not-found',
     require('./components/NotFound.vue').default
 );
+
+Vue.component(
+    'pagination',
+    require('../../node_modules/laravel-vue-pagination/src/LaravelVuePagination.vue').default
+);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

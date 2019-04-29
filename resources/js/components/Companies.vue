@@ -21,7 +21,7 @@
                                 <th>Registered At</th>
                                 <th>Modify</th>
                             </tr>
-                            <tr v-for="user in users" :key="user.id">
+                            <tr v-for="user in users.data" :key="user.id">
                                 <td>{{ user.id }}</td>
                                 <td>{{ user.name | upperCase }}</td>
                                 <td>{{ user.email}}</td>
@@ -40,6 +40,9 @@
                     </table>
                 </div>
                 <!-- /.card-body -->
+                <div class="card-footer" v-if="this.users.total > this.users.per_page">
+                    <pagination :data="users" @pagination-change-page="getResults"></pagination>
+                </div>
             </div>
             <!-- /.card -->
           </div>
@@ -80,17 +83,6 @@
                                 placeholder="Short bio for user (Optional)"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
                                 <has-error :form="form" field="bio"></has-error>
-                            </div>
-
-
-                            <div class="form-group">
-                                <select name="type" v-model="form.type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
-                                    <option value="">Select User Role</option>
-                                    <option value="super admin">Super Admin</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="user">Company</option>
-                                </select>
-                                <has-error :form="form" field="type"></has-error>
                             </div>
 
                             <div class="form-group">
@@ -134,10 +126,16 @@
             }
         },
         methods: {
+            getResults(page = 1) {
+                axios.get(`api/companies?page=${page}`)
+                    .then(response => {
+                        this.users = response.data;
+                });
+            },
             loadUsers() {
                 if(this.$gate.isSadminOrAdmin()) {
                     axios.get('api/companies').then(( {data} ) => (
-                        this.users = data.data
+                        this.users = data
                     ));
                 }
             },
@@ -159,7 +157,7 @@
                 }
             },
             updateUser() {
-                 this.$Progress.start();
+                this.$Progress.start();
                 this.form.put('api/user/'+this.form.id)
                 .then(() => {
                     // success
@@ -178,6 +176,8 @@
             },
             createUser() {
                 this.$Progress.start();
+                this.form.type = 'user';
+                this.form.photo = 'profile.png';
                 axios.post('api/user',this.form)
                 .then((response) => {
                     console.log(response);

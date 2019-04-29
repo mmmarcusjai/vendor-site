@@ -29,7 +29,7 @@ class UserController extends Controller
         // return User::all();
         if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
         {
-            return User::latest()->paginate(10);
+            return User::latest()->paginate(5);
         }
     }
 
@@ -153,7 +153,7 @@ class UserController extends Controller
     {
         if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
         {
-            return User::where('type', 'user');
+            return User::where('type', 'user')->orderBy('id', 'desc')->paginate(5);
         }
     }
 }
