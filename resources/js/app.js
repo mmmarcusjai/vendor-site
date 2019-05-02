@@ -14,6 +14,10 @@ import { Form, HasError, AlertError } from 'vform';
 import VueProgressBar from 'vue-progressbar';
 import Swal from 'sweetalert2';
 import Gate from './Gate';
+import VeeValidate from 'vee-validate';
+
+// Form Validation
+Vue.use(VeeValidate, { fieldsBagName: 'formFields' });
 
 // Gate
 Vue.prototype.$gate = new Gate(window.user);
@@ -34,6 +38,8 @@ let routes = [
     { path: '/profile', component: require('./components/Profile.vue').default },
     { path: '/users', component: require('./components/Users.vue').default },
     { path: '/companies', component: require('./components/Companies.vue').default },
+    { path: '/projects-cat', component: require('./components/ProjectsCategory.vue').default },
+    { path: '/projects', component: require('./components/Projects.vue').default },
     { path: '/developer', component: require('./components/Developer.vue').default }
 ]
 

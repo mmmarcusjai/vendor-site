@@ -113,6 +113,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </router-link>
                             </li>
                             <li class="nav-item">
+                                <router-link to="/projects-cat" class="nav-link">
+                                    <i class="nav-icon fas fa-layer-group"></i>
+                                    <p>
+                                        Projects Category
+                                    </p>
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
                                 <router-link to="/projects" class="nav-link">
                                     <i class="nav-icon fas fa-file"></i>
                                     <p>

@@ -62,34 +62,43 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form @submit.prevent="editmode ? updateUser() :createUser()" @keydown="form.onKeydown($event)">
+                    <form @submit.prevent="checkForm()" @keydown="form.onKeydown($event)">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name"
+                                <input v-model="form.name" v-validate="'required'" type="text" name="name"
                                     placeholder="Name"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
+                                    class="form-control" :class="{ 'is-invalid': form.errors.has('name'), 'is-invalid': errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
+                                <div v-show="errors.has('name')" class="help-block invalid-feedback">{{ errors.first('name') }}</div>
                             </div>
 
                                 <div class="form-group">
-                                <input v-model="form.email" type="email" name="email"
+                                <input v-model="form.email" v-validate="'required|email'" type="email" name="email"
                                     placeholder="Email Address"
-                                    class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
+                                    class="form-control" :class="{ 'is-invalid': form.errors.has('email'), 'is-invalid': errors.has('email') }">
                                 <has-error :form="form" field="email"></has-error>
+                                <div v-show="errors.has('email')" class="help-block invalid-feedback">{{ errors.first('email') }}</div>
                             </div>
-
-                                <div class="form-group">
+                            <div class="form-group">
                                 <textarea v-model="form.bio" name="bio" id="bio"
                                 placeholder="Short bio for user (Optional)"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
                                 <has-error :form="form" field="bio"></has-error>
                             </div>
 
-                            <div class="form-group">
-                                <input v-model="form.password" type="password" name="password" id="password" placeholder="Password"
-                                class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
+                            <div class="form-group" v-if="!editmode">
+                                <input v-model="form.password" v-validate="'required|min:8'" type="password" name="password" id="password" placeholder="Password"
+                                class="form-control" :class="{ 'is-invalid': form.errors.has('password'), 'is-invalid': errors.has('password') }">
                                 <has-error :form="form" field="password"></has-error>
+                                <div v-show="errors.has('password')" class="help-block invalid-feedback">{{ errors.first('password') }}</div>
                             </div>
+                            <div class="form-group" v-if="editmode">
+                                <input v-model="form.password" v-validate="'min:8'" type="password" name="password" id="password" placeholder="Password"
+                                class="form-control" :class="{ 'is-invalid': form.errors.has('password')}">
+                                <has-error :form="form" field="password"></has-error>
+                                <div v-show="errors.has('password')" class="help-block invalid-feedback">{{ errors.first('password') }}</div>
+                            </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -122,7 +131,6 @@
                     bio: '',
                     photo: ''
                 }),
-                errors: []
             }
         },
         methods: {
@@ -150,11 +158,19 @@
                     this.form.fill(user);
                 }
                 $('#userModal').modal('show');
+                this.$validator.reset();
             },
-            checkForm(e) {
-                if(!this.form.name) {
-                    console.log(`${this.form.name}`);
-                }
+            checkForm() {
+                this.$validator.validateAll().then((result) => {
+                    if (result) {
+                        if(!this.editmode) {
+                            this.createUser();
+                        } else {
+                            this.updateUser();
+                        }   
+                        return;
+                    }
+                });
             },
             updateUser() {
                 this.$Progress.start();
@@ -176,25 +192,6 @@
             },
             createUser() {
                 this.$Progress.start();
-                this.form.type = 'user';
-                this.form.photo = 'profile.png';
-                axios.post('api/user',this.form)
-                .then((response) => {
-                    console.log(response);
-                    $('#userModal').modal('hide');
-                    Fire.$emit('userModified');
-                    Toast.fire({
-                        type: 'success',
-                        title: 'User create successfully'
-                    });
-                    this.$Progress.finish();
-                })
-                .catch((error) => {
-                    console.log(error.response);
-                });
-                
-                /*
-                this.$Progress.start();
                 this.form.post('api/user')
                 .then((response) => {
                     console.log(response);
@@ -209,8 +206,6 @@
                 .catch((error) => {
                     console.log(error);
                 });
-                */
-
             },
             deleteUser(id) {
                 console.log(id);

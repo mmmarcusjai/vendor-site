@@ -23,3 +23,11 @@ $fa-font-path: "../webfonts";
   background-color: #4f565d !important;
   color: #fff !important;
 }
+
+.is-danger {
+  color: red;
+}
+
+.form-control.is-danger {
+  border-color: red;
+}

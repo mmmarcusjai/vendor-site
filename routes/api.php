@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResources(['user' => 'API\UserController']);
+Route::apiResources(['projectcategories' => 'API\ProjectCategory']);
 Route::get('profile', 'API\UserController@profile');
 Route::put('profile', 'API\UserController@updateProfile');
 Route::get('companies', 'API\UserController@companyList');
