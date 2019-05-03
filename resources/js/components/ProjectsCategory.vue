@@ -32,7 +32,7 @@
                     </vuetable>
                 </div>
                 <!-- /.card-body -->
-                <div class="card-footer">
+                <div class="card-footer" v-if="this.data.length > this.perPage">
                     <vuetable-pagination ref="pagination"
                         @vuetable-pagination:change-page="onChangePage"
                     ></vuetable-pagination>
@@ -65,6 +65,12 @@
                                 <has-error :form="form" field="category_name"></has-error>
                                 <div v-show="errors.has('category_name')" class="help-block invalid-feedback">{{ errors.first('category_name') }}</div>
                             </div>
+                            <div class="form-group">
+                                <textarea v-model="form.description" name="description" id="description"
+                                placeholder="Short description for Category (Optional)"
+                                class="form-control" :class="{ 'is-invalid': form.errors.has('description') }"></textarea>
+                                <has-error :form="form" field="description"></has-error>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -95,7 +101,9 @@
             return {
                 editmode: false,
                 form: new Form({
+                    id: '',
                     category_name : '',
+                    description: '',
                 }),
                 fields: [{
                     name: 'id',
@@ -112,7 +120,10 @@
                     title: 'Created At',
                     sortField: 'created_at'
                 },
-                'modify'],
+                {
+                    name: 'modify',
+                    title: 'Modify',
+                }],
                 perPage: 5,
                 data: []
             };
@@ -124,15 +135,21 @@
         },
 
         mounted() {
-            // axios.get("https://vuetable.ratiw.net/api/users").then(response => {
-            axios.get("api/projectcategories").then(response => {
-                this.data = response.data.data;
-            });
+            console.log('component mounted');
         },
-
         methods: {
+            loadCategory() {
+                if(this.$gate.isSadminOrAdmin()) {
+                    axios.get("api/projectcategories").then(response => {
+                    // axios.get("https://vuetable.ratiw.net/api/users").then(response => {
+                        this.data = response.data.data;
+                    });
+                }
+            },
             onPaginationData(paginationData) {
-                this.$refs.pagination.setPaginationData(paginationData);
+                if(this.data.length > this.perPage) {
+                    this.$refs.pagination.setPaginationData(paginationData);
+                }
             },
             onChangePage(page) {
                 this.$refs.vuetable.changePage(page);
@@ -165,9 +182,6 @@
                     data: _.slice(local, from, to)
                 };  
             },
-            onActionClicked(action, data) {
-                console.log("slot actions: on-click", data.name);
-            },
             openModal(user) {
                 if(!user) {
                     this.editmode = false;
@@ -181,6 +195,86 @@
                 $('#userModal').modal('show');
                 this.$validator.reset();
             },
+            checkForm() {
+                this.$validator.validateAll().then((result) => {
+                    if (result) {
+                        if(!this.editmode) {
+                            this.createCategory();
+                        } else {
+                            this.updateCategory();
+                        }   
+                        return;
+                    }
+                });
+            },
+            createCategory() {
+                this.$Progress.start();
+                this.form.post('api/projectcategories')
+                .then((response) => {
+                    console.log(response);
+                    $('#userModal').modal('hide');
+                    Fire.$emit('catModified');
+                    Toast.fire({
+                        type: 'success',
+                        title: 'User create successfully'
+                    });
+                    this.$Progress.finish();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            updateCategory() {
+                this.$Progress.start();
+                this.form.put('api/projectcategories/'+this.form.id)
+                .then(() => {
+                    // success
+                    $('#userModal').modal('hide');
+                     Swal.fire(
+                        'Updated!',
+                        'Information has been updated.',
+                        'success'
+                    )
+                    this.$Progress.finish();
+                    Fire.$emit('catModified');
+                })
+                .catch(() => {
+                    this.$Progress.fail();
+                });
+            },
+            deleteUser(id) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    // Send request
+                    if (result.value) {
+                        this.form.delete('api/projectcategories/'+id).then((response)=>{
+                            Swal.fire('Deleted!', 'Your file has been deleted.', 'success' );
+                            Fire.$emit('catModified');
+                        }).catch(()=> {
+                            Swal.fire("Failed!", "There was something wronge.", "warning");
+                        });
+                    }
+                });
+            }
+        },
+        created() {
+            this.loadCategory();
+            Fire.$on('catModified', () => {
+                this.loadCategory();
+            });
         }         
 };
 </script>
+
+<style>
+    .vuetable-th-gutter {
+        display: none;
+    }
+</style>

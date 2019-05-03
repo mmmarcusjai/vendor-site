@@ -17,7 +17,7 @@ class CreateProjectCategoriesTable extends Migration
             $table->bigIncrements('id');
             $table->string('category_name');
             $table->string('description');
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

@@ -31,3 +31,25 @@ $fa-font-path: "../webfonts";
 .form-control.is-danger {
   border-color: red;
 }
+
+i.icon {
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: normal;
+}
+
+i.icon.sort:before {
+  content: '\f0dc';
+}
+
+i.icon.chevron.up:before {
+  content: '\f077';
+}
+
+i.icon.chevron.down:before {
+  content: '\f078';
+}
+
+i.icon:before {
+    background: 0 0 !important;
+}

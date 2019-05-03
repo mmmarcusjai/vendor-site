@@ -26,7 +26,7 @@ class ProjectCategory extends Controller
     {
         if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
         {
-            return ProjectCategories::latest()->paginate(5);
+            return ProjectCategories::where('status', 1)->orderBy('id', 'desc')->paginate();
         }
     }
 
@@ -38,7 +38,14 @@ class ProjectCategory extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $this->validate($request, [
+            'category_name' => 'required|string|max:255',
+        ]);
+        // return $request;
+        return ProjectCategories::create([
+            'category_name' => $request['category_name'],
+            'description' => $request['description'],
+        ]);
     }
 
     /**
@@ -61,7 +68,13 @@ class ProjectCategory extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $cat = ProjectCategories::findOrFail($id);
+        $this->validate($request,[
+            'category_name' => 'required|string|max:191'
+        ]);
+        
+        $cat->update($request->all());
+        return ['message' => 'Updated the category info'];
     }
 
     /**
@@ -72,6 +85,18 @@ class ProjectCategory extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (\Gate::allows('isSadmin') || \Gate::allows('isAdmin')) 
+        {
+            $cat = ProjectCategories::findOrFail($id);
+            // Delete user
+            if($cat)
+            {
+                $cat->status = 0;
+                $cat->save();
+                return ['message' => 'Category Deleted'];
+            }
+
+            
+        }
     }
 }
