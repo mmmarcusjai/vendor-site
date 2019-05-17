@@ -29612,3 +29612,7 @@ i.icon:before {
   background: 0 0 !important;
 }
 
+.vdp-datepicker + .help-block.invalid-feedback {
+  display: block;
+}
+

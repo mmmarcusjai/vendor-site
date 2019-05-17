@@ -15,7 +15,15 @@ import VueProgressBar from 'vue-progressbar';
 import Swal from 'sweetalert2';
 import Gate from './Gate';
 import VeeValidate from 'vee-validate';
+import moment from 'moment'
 
+// Moment
+Vue.prototype.$moment = moment;
+/*
+import CKEditor from '@ckeditor/ckeditor5-vue';
+
+Vue.use(CKEditor);
+*/
 // Form Validation
 Vue.use(VeeValidate, { fieldsBagName: 'formFields' });
 
@@ -107,6 +115,11 @@ Vue.component(
 Vue.component(
     'not-found',
     require('./components/NotFound.vue').default
+);
+
+Vue.component(
+    'file-upload',
+    require('./components/FileUpload.vue').default
 );
 
 Vue.component(
